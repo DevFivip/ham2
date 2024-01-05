@@ -117,7 +117,7 @@ class OnlyfanResource extends Resource
                 Tables\Columns\TextColumn::make('name'),
                 Tables\Columns\TextColumn::make('username'),
                 Tables\Columns\IconColumn::make('status')->icon(
-                    fn(string $state): string => match ($state) {
+                    fn (string $state): string => match ($state) {
                         '1' => 'heroicon-o-check-circle',
                         '0' => 'heroicon-s-x-circle',
                     },
@@ -133,8 +133,8 @@ class OnlyfanResource extends Resource
     public static function getRelations(): array
     {
         return [
-                //
-            ];
+            //
+        ];
     }
 
     public static function getPages(): array
