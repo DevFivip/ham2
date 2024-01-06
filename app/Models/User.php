@@ -9,10 +9,12 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
 use LucasDotVin\Soulbscription\Models\Concerns\HasSubscriptions;
+use Althinect\FilamentSpatieRolesPermissions\Concerns\HasSuperAdmin;
+
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable,HasSubscriptions;
+    use HasApiTokens, HasFactory, Notifiable, HasSubscriptions, HasSuperAdmin;
 
     /**
      * The attributes that are mass assignable.
@@ -46,7 +48,8 @@ class User extends Authenticatable
     ];
 
 
-    public function onlyfans(){
+    public function onlyfans()
+    {
         $this->hasMany(Onlyfan::class);
     }
 }
