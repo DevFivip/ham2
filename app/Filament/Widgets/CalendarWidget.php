@@ -4,6 +4,9 @@ namespace App\Filament\Widgets;
 
 use App\Models\Event;
 use App\Models\Onlyfan;
+use DateTime;
+use Filament\Actions\Action;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Select;
@@ -14,10 +17,13 @@ use Saade\FilamentFullCalendar\Actions\CreateAction;
 use Saade\FilamentFullCalendar\Actions\DeleteAction;
 use Saade\FilamentFullCalendar\Actions\EditAction;
 use Saade\FilamentFullCalendar\Widgets\FullCalendarWidget;
+use Filament\Notifications\Notification;
 
 class CalendarWidget extends FullCalendarWidget
 {
     public Model | string | null $model = Event::class;
+
+    protected $listeners = ['updateUserOverview' => '$refresh'];
 
     public function fetchEvents(array $fetchInfo): array
     {
@@ -87,6 +93,29 @@ class CalendarWidget extends FullCalendarWidget
                 ]),
         ];
     }
+
+    function obtenerListaSubreddits($subredditsAsignados, $numerosubreddits)
+    {
+
+
+        // Obtener una lista aleatoria de subreddits
+        $subredditsAleatorias = array_rand($subredditsAsignados, intval($numerosubreddits));
+
+        // Si solo se seleccionó una subreddit, convertir a array para mantener consistencia
+        if (!is_array($subredditsAleatorias)) {
+            $subredditsAleatorias = array($subredditsAleatorias);
+        }
+
+        // Obtener los nombres de las subreddits seleccionadas
+        $subredditsSeleccionadas = array();
+        foreach ($subredditsAleatorias as $indice) {
+            $subredditsSeleccionadas[] = $subredditsAsignados[$indice];
+        }
+
+        return $subredditsSeleccionadas;
+    }
+
+
     protected function headerActions(): array
     {
         return [
@@ -96,7 +125,67 @@ class CalendarWidget extends FullCalendarWidget
                         ...$data,
                         'user_id' => auth()->user()->id
                     ];
-                })
+                }),
+
+            Action::make('scheduleEvents')
+                ->label('Programar Eventos')
+                ->form([
+                    Select::make('model_id')
+                        ->label('Modelo')
+                        ->options(Onlyfan::where('user_id', auth()->user()->id)->get()->pluck('name', 'id'))
+                        ->reactive()
+                        ->afterStateUpdated(fn (callable $set) => ('subreddit_id'))
+                        ->searchable()
+                        ->required(),
+                    DatePicker::make('fecha_inicio')->label('Fecha Inicio')->native(false)->required(),
+                    DatePicker::make('fecha_final')->label('Fecha Fin')->native(false)->required(),
+                    TextInput::make('number')->label('Post por dias')->required()
+                        ->numeric()
+                        ->minValue(1)
+                        ->maxValue(10)
+                    // RichEditor::make('body')->required(),
+                ])
+                ->action(function (array $data) {
+
+                    // Definir las subreddits disponibles
+                    $cs = Onlyfan::find($data['model_id']);
+                    $subredditsAsignados = $cs->subreddits->pluck("id")->toArray();
+
+                    // Definir el periodo de tiempo
+                    $fechaInicio = new DateTime($data["fecha_inicio"]);
+                    $fechaFin = new DateTime($data["fecha_final"]);
+                    // dd( $fechaInicio, $fechaFin);
+
+                    $res = [];
+                    $datetime = new DateTime();
+                    // Generar lista de subreddits para cada día
+                    while ($fechaInicio <= $fechaFin) {
+                        $fechaActual = $fechaInicio->format('Y-m-d');
+                        // dd($subredditsAsignados);
+                        $subredditDia = $this->obtenerListaSubreddits($subredditsAsignados, $data['number']);
+
+                        // echo "Para el día $fechaActual, come las siguientes subreddits: " . implode(", ", $subredditDia) . "\n";
+                        // dd($subredditDia);
+                        foreach ($subredditDia as $subreddit) {
+                            $arr = ["created_at" => $datetime, "updated_at" => $datetime, "posted_at" => $fechaActual, "subreddit_id" => $subreddit, 'user_id' => auth()->user()->id, 'model_id' => $data['model_id'], 'status' => 2];
+                            error_log($subreddit);
+                            array_push($res, $arr);
+                        }
+
+
+                        // Avanzar al siguiente día
+                        $fechaInicio->modify('+1 day');
+                    }
+
+                    Event::insert($res);
+
+                    Notification::make()
+                        ->success()
+                        ->title(__('filament-panels::resources/pages/edit-record.notifications.saved.title'))
+                        ->send();
+
+                    $this->js('window.location.reload()');
+                }),
         ];
     }
 
