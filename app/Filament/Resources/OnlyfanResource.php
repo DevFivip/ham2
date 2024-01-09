@@ -20,7 +20,7 @@ class OnlyfanResource extends Resource
 {
     protected static ?string $model = Onlyfan::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'si-onlyfans';
 
     public static function form(Form $form): Form
     {

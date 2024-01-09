@@ -17,7 +17,7 @@ class SubredditResource extends Resource
 {
     protected static ?string $model = Subreddit::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'fab-reddit';
 
     public static function form(Form $form): Form
     {

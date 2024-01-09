@@ -10,6 +10,7 @@
     "require": {
         "php": "^8.1",
         "althinect/filament-spatie-roles-permissions": "^2.2",
+        "codeat3/blade-simple-icons": "^2.4",
         "filament/filament": "^3.1",
         "guzzlehttp/guzzle": "^7.2",
         "laravel/framework": "^10.10",
