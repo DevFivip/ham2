@@ -26,4 +26,9 @@ class Subreddit extends Model
     {
         return $this->belongsToMany(Onlyfan::class, 'onlyfans_subreddits', 'subreddit_id');
     }
+
+    public function getFullDescriptionAttribute()
+{
+    return $this->name . ' (' . implode(', ',$this->tags).")";
+}
 }
