@@ -23,7 +23,8 @@ class EventResource extends Resource
     public static function form(Form $form): Form
     {
         return $form
-            ->schema([
+            ->schema(
+                [
                 Forms\Components\Select::make('model_id')
                     ->label('Modelo')
                     ->options(Onlyfan::where('user_id', auth()->user()->id)->get()->pluck('name', 'id'))
@@ -56,7 +57,8 @@ class EventResource extends Resource
                     ->label('Fecha Programada')
                     ->native(false)
                     ->required(),
-            ]);
+            ]
+        );
     }
 
     public static function table(Table $table): Table

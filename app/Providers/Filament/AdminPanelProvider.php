@@ -18,6 +18,8 @@ use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Althinect\FilamentSpatieRolesPermissions\FilamentSpatieRolesPermissionsPlugin;
+use Saade\FilamentFullCalendar\FilamentFullCalendarPlugin;
+
 
 
 class AdminPanelProvider extends PanelProvider
@@ -56,8 +58,17 @@ class AdminPanelProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
             ])
-            ->plugin(FilamentSpatieRolesPermissionsPlugin::make())
-            ->spa()
-            ;
+            ->plugins([
+                FilamentSpatieRolesPermissionsPlugin::make(),
+                FilamentFullCalendarPlugin::make()
+                    // ->schedulerLicenseKey()
+                    ->selectable()
+                    ->editable()
+                    ->timezone('America/Lima')
+                    ->locale(config('app.locale'))
+                    // ->plugins([])
+                // ->config()
+            ])
+            ->spa();
     }
 }

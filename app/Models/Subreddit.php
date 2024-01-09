@@ -28,7 +28,7 @@ class Subreddit extends Model
     }
 
     public function getFullDescriptionAttribute()
-{
-    return $this->name . ' (' . implode(', ',$this->tags).")";
-}
+    {
+        return $this->name . ' (' . implode(', ', $this->tags) . ")";
+    }
 }

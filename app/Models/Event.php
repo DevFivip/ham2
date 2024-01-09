@@ -22,12 +22,34 @@ class Event extends Model
     {
         return $this->hasOne(User::class);
     }
-    public function model()
+    public function onlyfan()
     {
-        return $this->hasOne(Onlyfan::class, 'model_id');
+        return $this->hasOne(Onlyfan::class, 'id', 'model_id');
     }
     public function subreddit()
     {
-        return $this->hasOne(Subreddit::class);
+        return $this->hasOne(Subreddit::class, 'id', 'subreddit_id');
+    }
+
+    public function getFullDescriptionAttribute()
+    {
+        // return $this->model_id . ' (' . implode(', ', $this->tags) . ")";
+
+        switch ($this->status) {
+            case 1:
+                $icon = '❌';
+                break;
+            case 2:
+                $icon = '🕑';
+                break;
+            case 3:
+                $icon = '✅';
+                break;
+
+            default:
+                $icon = '🤷‍♂️';
+                break;
+        }
+        return $icon . ' ' . $this->onlyfan->name . ' ' . $this->subreddit->name . ' (' . implode(', ', $this->subreddit->tags) . ")";
     }
 }
