@@ -15,6 +15,10 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use LucasDotVin\Soulbscription\Models\Plan;
 
+use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+
 class PlanResource extends Resource
 {
     protected static ?string $model = Plan::class;
@@ -50,6 +54,12 @@ class PlanResource extends Resource
                     ->integer()
                     ->default(0)
                     ->required(),
+                Repeater::make('features')
+                    ->relationship()
+                    ->schema([
+                        TextInput::make('name')->required(),
+                    ])
+                    ->columns(2)
             ]);
     }
 
@@ -61,6 +71,8 @@ class PlanResource extends Resource
                 Tables\Columns\TextColumn::make('periodicity'),
                 Tables\Columns\TextColumn::make('periodicity_type')->searchable(),
                 Tables\Columns\TextColumn::make('grace_days'),
+                Tables\Columns\TextColumn::make('features.name'),
+                Tables\Columns\TextColumn::make('features.charges'),
             ])
             ->filters([
                 //

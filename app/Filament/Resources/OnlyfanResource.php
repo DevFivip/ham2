@@ -126,7 +126,18 @@ class OnlyfanResource extends Resource
             ->filters([
                 //
             ])
-            ->actions([Tables\Actions\EditAction::make()])
+            ->actions([
+                // Tables\Actions\EditAction::make(),
+                Tables\Actions\ActionGroup::make([
+                    Tables\Actions\ViewAction::make(),
+                    Tables\Actions\EditAction::make(),
+                    Tables\Actions\DeleteAction::make(),
+                    Tables\Actions\Action::make('Subreddit Asignacion')
+                        ->label('Subreddit Asignacion')
+                        ->icon('fab-reddit')
+                        ->url(fn (Onlyfan $record): string => route('filament.admin.resources.onlyfans.asing', $record)),
+                ])
+            ])
             ->bulkActions([Tables\Actions\BulkActionGroup::make([Tables\Actions\DeleteBulkAction::make()])]);
     }
 
@@ -143,6 +154,7 @@ class OnlyfanResource extends Resource
             'index' => Pages\ListOnlyfans::route('/'),
             'create' => Pages\CreateOnlyfan::route('/create'),
             'edit' => Pages\EditOnlyfan::route('/{record}/edit'),
+            'asing' => Pages\AsingSubreddit::route('asing-subreddit/{record}'),
         ];
     }
 }

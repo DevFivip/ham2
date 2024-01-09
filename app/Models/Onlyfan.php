@@ -14,4 +14,9 @@ class Onlyfan extends Model
     {
         $this->belongsTo(User::class);
     }
+
+    public function subreddits()
+    {
+        return $this->belongsToMany(Subreddit::class,'onlyfans_subreddits','model_id');
+    }
 }
