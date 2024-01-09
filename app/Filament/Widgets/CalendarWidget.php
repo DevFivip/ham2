@@ -23,10 +23,14 @@ class CalendarWidget extends FullCalendarWidget
 {
     public Model | string | null $model = Event::class;
 
+    // public function getEloquentQuery()
+    // {
+    //     return parent::getEloquentQuery()->where('user_id', auth()->user()->id);
+    // }
 
     public function fetchEvents(array $fetchInfo): array
     {
-        return Event::get()
+        return Event::where('user_id',auth()->user()->id)->get()
             // where('posted_at', '>=', $fetchInfo['posted_at'])
             // ->where('posted_at', '<=', $fetchInfo['posted_at'])
             // ->get()
