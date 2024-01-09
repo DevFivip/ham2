@@ -21,11 +21,11 @@ return new class extends Migration
         });
 
         Schema::create('onlyfans_subreddits', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('user_id')->constrained('users');
+            // $table->id();
+            // $table->foreignId('user_id')->constrained('users');
             $table->foreignId('model_id')->constrained('onlyfans');
             $table->foreignId('subreddit_id')->constrained('subreddits');
-            $table->integer('verification_status')->nullable();
+            // $table->integer('verification_status')->nullable();
         });
 
         Schema::create('events', function (Blueprint $table) {

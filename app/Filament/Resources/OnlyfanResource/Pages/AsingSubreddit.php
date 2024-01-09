@@ -69,6 +69,7 @@ class AsingSubreddit extends Page implements HasForms
     {
         try {
             $data = $this->form->getState();
+            // dd($data);
             // auth()->user()->company->update($data);
         } catch (Halt $exception) {
             return;
