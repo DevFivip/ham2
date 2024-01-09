@@ -23,7 +23,6 @@ class CalendarWidget extends FullCalendarWidget
 {
     public Model | string | null $model = Event::class;
 
-    protected $listeners = ['updateUserOverview' => '$refresh'];
 
     public function fetchEvents(array $fetchInfo): array
     {
