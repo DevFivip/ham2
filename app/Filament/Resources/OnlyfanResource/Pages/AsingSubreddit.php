@@ -38,7 +38,6 @@ class AsingSubreddit extends Page implements HasForms
         static::authorizeResourceAccess();
         $this->options = (Subreddit::get())->pluck('name', 'id');
         $this->tags = $col->map(function($arr){return implode(', ',$arr);});
-
         $this->form->fill(['name' => $this->record->name]);
     }
     public function form(Form $form): Form
@@ -52,7 +51,7 @@ class AsingSubreddit extends Page implements HasForms
                     ->options($this->options)
                     ->descriptions($this->tags)
                     ->searchable()
-                    ->relationship(titleAttribute: 'name')    ->columns(3)
+                    ->relationship(titleAttribute: 'name')->columns(3)
             ])
             ->statePath('data')
             ->model($this->record);

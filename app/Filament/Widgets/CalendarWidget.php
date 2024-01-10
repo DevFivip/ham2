@@ -22,32 +22,64 @@ use Filament\Notifications\Notification;
 class CalendarWidget extends FullCalendarWidget
 {
     public Model | string | null $model = Event::class;
+    protected int | string | array $columnSpan = 'full';
+    public $widgetData;
 
-    // public function getEloquentQuery()
+    // public function form(Form $form): Form
     // {
-    //     return parent::getEloquentQuery()->where('user_id', auth()->user()->id);
+    //     return $form
+    //         ->schema([
+    //             Select::make('model_id')
+    //                 ->label('Modelo')
+    //                 ->options(
+    //                     Onlyfan::where('user_id', auth()->user()->id)->get()->pluck('name', 'id')
+    //                 ),
+    //         ])
+    //         ->statePath('data');
     // }
+
+    // public function submit(): void
+    // {
+    //     $state = $this->form->getState()['model_id'];
+    //     $this->dispatch('FilterSubmit', $state);
+    // }
+
+    public function mount($widgetData)
+    {
+        $this->widgetData = $widgetData;
+
+        // $this->content = $post->content;
+    }
 
     public function fetchEvents(array $fetchInfo): array
     {
-        return Event::where('user_id',auth()->user()->id)->get()
+        // dd($this->widgetData);
+
+        $query = Event::where('user_id', auth()->user()->id);
+
+        if (isset($this->widgetData["model_id"])) {
+            $query->where('model_id', $this->widgetData["model_id"]);
+        }
+
+        if (isset($this->widgetData["subreddit_id"])) {
+            $query->whereIn('subreddit_id', $this->widgetData["subreddit_id"]);
+        }
+
+        if (isset($this->widgetData["status"])) {
+            $query->where('status', $this->widgetData["status"]);
+        }
+
+        // dd($this->xdata);
+        //? dd($this->widgetData);
+        return $query->get()
+
+
             // where('posted_at', '>=', $fetchInfo['posted_at'])
             // ->where('posted_at', '<=', $fetchInfo['posted_at'])
             // ->get()
             ->map(function (Event $event) {
-                $su = $event->subreddit;
-                $mo = $event->model;
-
-                // var_dump($mo[0]->name);
-
-                // if(!!!$mo->name){
-                //     dd($su);
-                // }else{
-                //     dd($mo);
-                // }
                 return [
                     'id'    => $event->id,
-                    // 'title' => $su->name.' '. ' (' . implode(', ', $su->tags) . ")",
                     'title' => $event->full_description,
                     'start' => $event->posted_at,
                     'end'   => null,
@@ -99,7 +131,6 @@ class CalendarWidget extends FullCalendarWidget
 
     function obtenerListaSubreddits($subredditsAsignados, $numerosubreddits)
     {
-
 
         // Obtener una lista aleatoria de subreddits
         $subredditsAleatorias = array_rand($subredditsAsignados, intval($numerosubreddits));
@@ -189,6 +220,7 @@ class CalendarWidget extends FullCalendarWidget
 
                     $this->js('window.location.reload()');
                 }),
+
         ];
     }
 
