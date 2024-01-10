@@ -13,7 +13,8 @@ class Subreddit extends Model
         "name",
         "tags",
         "verification",
-        "status"
+        "status",
+        "description"
     ];
 
     protected $casts = [
@@ -29,6 +30,6 @@ class Subreddit extends Model
 
     public function getFullDescriptionAttribute()
     {
-        return $this->name . ' (' . implode(', ', $this->tags) . ")";
+        return $this->name . ' (' . implode(', ', $this->tags) . ") " . $this->description;
     }
 }

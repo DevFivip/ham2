@@ -27,6 +27,9 @@ class SubredditResource extends Resource
                 Forms\Components\TagsInput::make('tags')->label('Tags')->required(),
                 Forms\Components\Checkbox::make('verification')->label('Verificación')->helperText('Requiere verificación para realizar publicaciones?')->inline(),
                 Forms\Components\Checkbox::make('status')->default(true)->inline(),
+                Forms\Components\Textarea::make('description')
+                    ->rows(10)
+                    ->cols(20)
             ]);
     }
 
@@ -35,6 +38,7 @@ class SubredditResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')->searchable(),
+                Tables\Columns\TextColumn::make('description')->searchable(),
                 Tables\Columns\TextColumn::make('tags')->badge()->searchable(),
                 Tables\Columns\ToggleColumn::make('verification'),
                 Tables\Columns\ToggleColumn::make('status')
