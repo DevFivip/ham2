@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Filament\Facades\Filament;
 use Filament\Navigation\NavigationItem;
+use Filament\Navigation\UserMenuItem;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -22,12 +23,19 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Filament::serving(function () {
+            Filament::registerUserMenuItems([
+                UserMenuItem::make()
+                    ->label('Plan - ' . auth()->user()->subscription?->plan?->name ?? 'Sin subscripcion')
+                    // ->url(route('filament.pages.settings'))
+                    ->icon('polaris-major-billing-statement-dollar-filled'),
+            ]);
             Filament::registerNavigationItems([
                 NavigationItem::make('Analytics')
                     ->url('#')
                     ->icon('heroicon-o-presentation-chart-line')
                     ->activeIcon('heroicon-s-presentation-chart-line')
                     ->group('Reports')
+                    ->visible((auth()->user())->hasFeature('reports-module'))
                     ->sort(3),
                 // NavigationItem::make('Test Can permision')
                 //     ->icon('heroicon-o-presentation-chart-line')

@@ -18,6 +18,8 @@ use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Althinect\FilamentSpatieRolesPermissions\FilamentSpatieRolesPermissionsPlugin;
+use App\Models\User;
+use Filament\Navigation\MenuItem;
 use Saade\FilamentFullCalendar\FilamentFullCalendarPlugin;
 
 
@@ -66,8 +68,15 @@ class AdminPanelProvider extends PanelProvider
                     ->editable()
                     ->timezone('America/Lima')
                     ->locale(config('app.locale'))
-                    // ->plugins([])
+                // ->plugins([])
                 // ->config()
+            ])
+            ->userMenuItems([
+                MenuItem::make()
+                    ->label('Settings')
+                    // ->url(fn (): string => Settings::getUrl())
+                    ->icon('heroicon-o-cog-6-tooth'),
+                // ...
             ])
             ->spa();
     }
