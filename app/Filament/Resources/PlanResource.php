@@ -18,6 +18,7 @@ use LucasDotVin\Soulbscription\Models\Plan;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use LucasDotVin\Soulbscription\Models\Feature;
 
 class PlanResource extends Resource
 {
@@ -55,11 +56,17 @@ class PlanResource extends Resource
                     ->default(0)
                     ->required(),
                 Repeater::make('features')
-                    ->relationship()
                     ->schema([
-                        TextInput::make('name')->required(),
+                        Select::make('feature_id')
+                            ->label('Feature')
+                            ->options(Feature::all()->pluck('name', 'id'))
+                            ->native(false)
+                            ->required(),
+                        TextInput::make('charges'),
                     ])
+                    // ->relationship()
                     ->columns(2)
+                    ->hidden(fn (string $operation): bool => $operation === 'create')
             ]);
     }
 
