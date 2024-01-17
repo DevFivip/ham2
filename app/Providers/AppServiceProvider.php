@@ -25,7 +25,7 @@ class AppServiceProvider extends ServiceProvider
         Filament::serving(function () {
             Filament::registerUserMenuItems([
                 UserMenuItem::make()
-                    ->label('Plan - ' . auth()->user()->subscription?->plan?->name ?? 'Sin subscripcion')
+                    ->label('Plan - ' . auth()->user()?->subscription?->plan?->name ?? 'Sin subscripcion')
                     // ->url(route('filament.pages.settings'))
                     ->icon('polaris-major-billing-statement-dollar-filled'),
             ]);
@@ -35,7 +35,7 @@ class AppServiceProvider extends ServiceProvider
                     ->icon('heroicon-o-presentation-chart-line')
                     ->activeIcon('heroicon-s-presentation-chart-line')
                     ->group('Reports')
-                    ->visible((auth()->user())->hasFeature('reports-module'))
+                    ->visible((auth()->user())?->hasFeature('reports-module') || false)
                     ->sort(3),
                 // NavigationItem::make('Test Can permision')
                 //     ->icon('heroicon-o-presentation-chart-line')
