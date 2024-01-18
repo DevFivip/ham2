@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\PlanResource\Pages;
 use App\Filament\Resources\PlanResource\RelationManagers;
+use App\Models\Plan;
 use LucasDotVin\Soulbscription\Enums\PeriodicityType;
 
 use Filament\Forms;
@@ -13,7 +14,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use LucasDotVin\Soulbscription\Models\Plan;
+// use LucasDotVin\Soulbscription\Models\Plan;
 
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
@@ -37,6 +38,8 @@ class PlanResource extends Resource
                 Forms\Components\TextInput::make('name')
                     ->label('Nombre del Plan')
                     ->required(),
+                Forms\Components\TextInput::make('price')
+                    ->label('Precio $'),
                 Forms\Components\TextInput::make('periodicity')
                     ->label('Periodo')
                     ->integer()
@@ -75,6 +78,7 @@ class PlanResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')->searchable(),
+                Tables\Columns\TextColumn::make('price')->money('USD', divideBy: 1)->searchable(),
                 Tables\Columns\TextColumn::make('periodicity'),
                 Tables\Columns\TextColumn::make('periodicity_type')->searchable(),
                 Tables\Columns\TextColumn::make('grace_days'),

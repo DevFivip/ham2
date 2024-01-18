@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages;
 
+use App\Http\Controllers\PaymentController;
 use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -17,7 +18,8 @@ use Filament\Infolists\Infolist;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Illuminate\Support\HtmlString;
 use Illuminate\Support\Facades\Blade;
-use LucasDotVin\Soulbscription\Models\Plan;
+use App\Models\Plan;
+use Filament\Forms\Components\Radio;
 
 class Subscription extends Page implements HasForms
 {
@@ -53,34 +55,15 @@ class Subscription extends Page implements HasForms
 
     public function form(Form $form): Form
     {
-        if (!auth()->user()->subscription) {
+        if (!!auth()->user()->subscription) {
             return $form
                 ->live()
                 ->schema([
-                    Wizard::make([
-                        Wizard\Step::make('Adquirir Plan')
-                            ->schema([
-                                Select::make('plan_id')
-                                    ->label('Plan')
-                                    ->options(Plan::whereNotIn('id', [6, 5])->pluck('name', 'id'))
-                                    ->native(false),
-                            ]),
-                        Wizard\Step::make('Delivery')
-                            ->schema([
-                                TextInput::make('name2')
-                            ]),
-                        Wizard\Step::make('Billing')
-                            ->schema([
-                                TextInput::make('name3')
-                            ]),
-                    ])->submitAction(new HtmlString(Blade::render(<<<BLADE
-                <x-filament::button
-                    type="submit"
-                    size="sm"
-                >
-                    Proceder orden
-                </x-filament::button>
-            BLADE)))
+                    Select::make('plan_id')
+                        ->placeholder('Seleccione un Plan')
+                        ->label('Plan')
+                        ->options(Plan::whereNotIn('id', [auth()->user()->subscription->plan->id])->get()->pluck('name_with_price', 'id'))
+                        ->native(false)->columnSpan(2),
                 ])
                 // ->model($this->record)
                 ->statePath('init')
@@ -89,30 +72,20 @@ class Subscription extends Page implements HasForms
             return $form
                 ->live()
                 ->schema([
-                    Wizard::make([
-                        Wizard\Step::make(' Aumentar / Cambiar Plan')
-                            ->schema([
-                                Select::make('plan_id')
-                                    ->label('Plan')
-                                    ->options(Plan::whereNotIn('id', [auth()->user()->subscription->plan->id])->pluck('name', 'id'))
-                                    ->native(false),
-                            ]),
-                        Wizard\Step::make('Pago')
-                            ->schema([
-                                TextInput::make('pago_id')
-                            ]),
-                        Wizard\Step::make('Finalizar Orden')
-                            ->schema([
-                                TextInput::make('name3')
-                            ]),
-                    ])->submitAction(new HtmlString(Blade::render(<<<BLADE
-                <x-filament::button
-                    type="submit"
-                    size="sm"
-                >
-                    Proceder orden
-                </x-filament::button>
-            BLADE)))
+                    Select::make('plan_id')
+                        ->label('Plan')
+                        ->placeholder('Seleccione un Plan')
+                        ->options(Plan::whereNotIn('id', [6, 5])->get()->pluck('name_with_price', 'id'))
+                        ->native(false)
+                        ->required()
+                        ->columnSpan(2),
+                    Radio::make('payment_id')
+                        ->label('Metodo de Pago')
+                        ->required()
+                        ->options([
+                            1 => 'Paypal',
+                            2 => 'Binance',
+                        ]),
                 ])
                 // ->model($this->record)
                 ->statePath('init')
@@ -122,22 +95,28 @@ class Subscription extends Page implements HasForms
 
     public function submit()
     {
-        $players = $this->form->getState();
-        dd($players);
+        $paypal = new PaymentController();
+        $pago = $this->form->getState();
+        $plan = Plan::find($pago['plan_id']);
+        $pay = $paypal->pay($plan['price']);
+        // dd($pay);
     }
     protected function getFormActions(): array
     {
         return [
             Action::make('search')
-                ->label('Filtrar Busqueda')
+                ->label('Procesar Pago')
                 ->submit('save')
         ];
     }
 
     public function save(): void
     {
-        $data = $this->form->getState();
-        dd($data);
+        $paypal = new PaymentController();
+        $pago = $this->form->getState();
+        $plan = Plan::find($pago['plan_id']);
+        $pay = $paypal->pay($plan['price']);
+        
         // Notification::make()
         //     ->success()
         //     ->title('Filtrando')

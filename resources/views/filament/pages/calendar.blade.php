@@ -5,5 +5,5 @@
         <x-filament-panels::form.actions :actions="$this->getFormActions()" />
     </x-filament-panels::form>
 
-    @livewire(\App\Filament\Widgets\CalendarWidget::class, ['widgetData'=>$widgetData])
+    @livewire(\App\Filament\Widgets\CalendarWidget::class, ['widgetData' => $widgetData])
 </x-filament-panels::page>
