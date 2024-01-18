@@ -3,6 +3,7 @@
 namespace App\Filament\Pages;
 
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\PaypalController;
 use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -20,6 +21,8 @@ use Illuminate\Support\HtmlString;
 use Illuminate\Support\Facades\Blade;
 use App\Models\Plan;
 use Filament\Forms\Components\Radio;
+
+use Srmklive\PayPal\Services\PayPal as PayPalClient;
 
 class Subscription extends Page implements HasForms
 {
@@ -95,13 +98,12 @@ class Subscription extends Page implements HasForms
 
     public function submit()
     {
-        $paypal = new PaymentController();
+        $paypal = new PaypalController();
         $pago = $this->form->getState();
         $plan = Plan::find($pago['plan_id']);
-        $response = $paypal->pay($plan['price']);
-        error_log('$response');
-        dd('QLQ',$response);
-        $response->redirect();
+
+
+
         // dd($pay);
     }
     protected function getFormActions(): array
@@ -113,13 +115,55 @@ class Subscription extends Page implements HasForms
         ];
     }
 
-    public function save(): void
+    public function save()
     {
         $paypal = new PaymentController();
         $pago = $this->form->getState();
         $plan = Plan::find($pago['plan_id']);
         $pay = $paypal->pay($plan['price']);
-        
+
+
+        $provider = new PayPalClient;
+        $provider->setApiCredentials(config('paypal'));
+        $paypalToken = $provider->getAccessToken();
+
+        $response = $provider->createOrder([
+            "intent" => "CAPTURE",
+            "application_context" => [
+                "return_url" => route('success'),
+                "cancel_url" => route('cancel')
+            ],
+            "purchase_units" => [
+                [
+                    "amount" => [
+                        "currency_code" => "USD",
+                        "value" => $plan['price']
+                    ]
+                ]
+            ]
+        ]);
+
+        // dd($response);
+
+
+        if (isset($response['id']) && $response['id'] != null) {
+            foreach ($response['links'] as $link) {
+                if ($link['rel'] === 'approve') {
+
+                    session()->put('product_id', $plan['id']);
+                    session()->put('product_name', $plan['name']);
+                    session()->put('quantity', 1);
+                    session()->put('user_id', auth()->user()->id);
+
+                    return redirect()->away($link['href']);
+                }
+            }
+        } else {
+            return redirect()->route('cancel');
+        }
+
+
+
         // Notification::make()
         //     ->success()
         //     ->title('Filtrando')

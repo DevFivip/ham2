@@ -6,7 +6,7 @@ use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use LucasDotVin\Soulbscription\Enums\PeriodicityType;
 use LucasDotVin\Soulbscription\Models\Feature;
-use LucasDotVin\Soulbscription\Models\Plan;
+use App\Models\Plan;
 
 class PlanSeeder extends Seeder
 {

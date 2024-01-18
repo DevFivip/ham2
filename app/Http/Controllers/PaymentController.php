@@ -13,8 +13,8 @@ class PaymentController extends Controller
     public function __construct()
     {
         $this->gateway = Omnipay::create('PayPal_Rest');
-        $this->gateway->setClientId("Af6almIftzu6V1ZolnBOrCnvEEHZsycvAsuEoonfiUMO5H2c_i2g_HtdYjfHAUAeVbG9f7nLAY0lUIlf");
-        $this->gateway->setSecret("EOSV6a_bX4Qhe8cKWTBQ3sJHYzihV-ZUkPaLdXR3gANDKR36LpcX9F1OlcWWqB9C5UvCdnUJIruPmXvG");
+        $this->gateway->setClientId("");
+        $this->gateway->setSecret("");
         $this->gateway->setTestMode(true);
     }
 
@@ -34,10 +34,9 @@ class PaymentController extends Controller
             // return $response;
             // dd($response);
 
-             if ($response->isRedirect()) {
+            if ($response->isRedirect()) {
 
                 return $response->redirect();
-
             }
             // else{
             //     return $response->getMessage();
