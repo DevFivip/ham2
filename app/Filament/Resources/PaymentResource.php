@@ -117,9 +117,9 @@ class PaymentResource extends Resource
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('user_id')
-                ->native(false)
-                ->label('Usuario')
-                ->options(User::get()->pluck('name','id'))
+                    ->native(false)
+                    ->label('Usuario')
+                    ->options(User::get()->pluck('name', 'id'))
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

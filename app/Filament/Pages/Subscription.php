@@ -48,14 +48,14 @@ class Subscription extends Page implements HasForms, HasTable
         $this->init = ['plan_id' => null, 'pago_id' => null];
     }
 
-    public function getSubheading(): ?string
-    {
-        if (!auth()->user()->subscription) {
-            return __('No posees subcripción');
-        } else {
-            return __('Subscripcion actual ' . auth()->user()->subscription->plan->name);
-        }
-    }
+    // public function getSubheading(): ?string
+    // {
+    //     if (!auth()->user()->subscription) {
+    //         return __('No posees subcripción');
+    //     } else {
+    //         return __('Subscripcion actual ' . auth()->user()->subscription->plan->name);
+    //     }
+    // }
 
     // public function getMaxContentWidth(): MaxWidth
     // {
@@ -71,8 +71,24 @@ class Subscription extends Page implements HasForms, HasTable
                     Select::make('plan_id')
                         ->placeholder('Seleccione un Plan')
                         ->label('Plan')
-                        ->options(Plan::whereNotIn('id', [auth()->user()->subscription->plan->id])->get()->pluck('name_with_price', 'id'))
+                        ->options(Plan::whereNotIn('id', [6,5])->get()->pluck('name_with_price', 'id'))
                         ->native(false)->columnSpan(2),
+
+
+                        // Select::make('plan_id')
+                        // ->label('Plan')
+                        // ->placeholder('Seleccione un Plan')
+                        // ->options(Plan::whereNotIn('id', [6, 5])->get()->pluck('name_with_price', 'id'))
+                        // ->native(false)
+                        // ->required()
+                        // ->columnSpan(2),
+                    Radio::make('payment_id')
+                        ->label('Metodo de Pago')
+                        ->required()
+                        ->options([
+                            1 => 'Paypal',
+                            2 => 'Binance',
+                        ]),
                 ])
                 // ->model($this->record)
                 ->statePath('init')
@@ -183,6 +199,7 @@ class Subscription extends Page implements HasForms, HasTable
     {
         return $table
             ->query(Payment::query()->where('user_id',auth()->user()->id))
+            ->heading('Pagos realizados')
             ->columns([
                 TextColumn::make('payment_id')->searchable(),
                 TextColumn::make('product_name')->searchable(),
