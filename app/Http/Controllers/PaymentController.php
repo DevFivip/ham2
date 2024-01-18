@@ -10,32 +10,41 @@ class PaymentController extends Controller
 {
     private $gateway;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->gateway = Omnipay::create('PayPal_Rest');
-        $this->gateway->setClientId(env('PAYPAL_CLIENT_ID'));
-        $this->gateway->setSecret(env('PAYPAL_CLIENT_SECRET'));
+        $this->gateway->setClientId("Af6almIftzu6V1ZolnBOrCnvEEHZsycvAsuEoonfiUMO5H2c_i2g_HtdYjfHAUAeVbG9f7nLAY0lUIlf");
+        $this->gateway->setSecret("EOSV6a_bX4Qhe8cKWTBQ3sJHYzihV-ZUkPaLdXR3gANDKR36LpcX9F1OlcWWqB9C5UvCdnUJIruPmXvG");
         $this->gateway->setTestMode(true);
     }
 
     public function pay($total)
     {
         try {
-
+            // dd($total);
             $response = $this->gateway->purchase(array(
                 'amount' => $total,
-                'currency' => env('PAYPAL_CURRENCY'),
+                'currency' => 'USD',
                 'returnUrl' => url('success'),
                 'cancelUrl' => url('error')
             ))->send();
 
-            if ($response->isRedirect()) {
-                $response->redirect();
+            // dd($response);
+            // error_log(json_encode($response));
+            // return $response;
+            // dd($response);
+
+             if ($response->isRedirect()) {
+
+                return $response->redirect();
+
             }
-            else{
-                return $response->getMessage();
-            }
+            // else{
+            //     return $response->getMessage();
+            // }
 
         } catch (\Throwable $th) {
+            error_log($th->getMessage());
             return $th->getMessage();
         }
     }
@@ -65,20 +74,16 @@ class PaymentController extends Controller
                 $payment->save();
 
                 return "Payment is Successfull. Your Transaction Id is : " . $arr['id'];
-
-            }
-            else{
+            } else {
                 return $response->getMessage();
             }
-        }
-        else{
+        } else {
             return 'Payment declined!!';
         }
     }
 
     public function error()
     {
-        return 'User declined the payment!';   
+        return 'User declined the payment!';
     }
-
 }

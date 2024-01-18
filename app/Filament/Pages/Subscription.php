@@ -98,7 +98,10 @@ class Subscription extends Page implements HasForms
         $paypal = new PaymentController();
         $pago = $this->form->getState();
         $plan = Plan::find($pago['plan_id']);
-        $pay = $paypal->pay($plan['price']);
+        $response = $paypal->pay($plan['price']);
+        error_log('$response');
+        dd('QLQ',$response);
+        $response->redirect();
         // dd($pay);
     }
     protected function getFormActions(): array
