@@ -9,7 +9,7 @@ class Payment extends Model
 {
     use HasFactory;
 
-    private $filable = [
+    protected $fillable = [
         "payment_id",
         "product_name",
         "quantity",
@@ -21,4 +21,10 @@ class Payment extends Model
         "payment_status",
         "payment_method"
     ];
+
+    
+    public function user()
+    {
+        return $this->hasOne(User::class,'id','user_id');
+    }
 }

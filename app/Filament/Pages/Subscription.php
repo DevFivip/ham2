@@ -4,11 +4,13 @@ namespace App\Filament\Pages;
 
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PaypalController;
+use App\Models\Payment;
 use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Wizard;
 use Filament\Forms\Contracts\HasForms;
+use Filament\Tables\Contracts\HasTable;
 use Filament\Forms\Form;
 use Filament\Support\Enums\MaxWidth;
 use Filament\Pages\Page;
@@ -17,16 +19,20 @@ use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Infolist;
 
 use Filament\Forms\Concerns\InteractsWithForms;
+use Filament\Tables\Concerns\InteractsWithTable;
 use Illuminate\Support\HtmlString;
 use Illuminate\Support\Facades\Blade;
 use App\Models\Plan;
 use Filament\Forms\Components\Radio;
-
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Table;
 use Srmklive\PayPal\Services\PayPal as PayPalClient;
 
-class Subscription extends Page implements HasForms
+class Subscription extends Page implements HasForms, HasTable
 {
     use InteractsWithForms;
+    use InteractsWithTable;
+    
 
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
 
@@ -171,5 +177,31 @@ class Subscription extends Page implements HasForms
 
         // $queryString = Arr::query($data);
         // $this->redirect('/admin/calendar?' . $queryString, navigate: true);
+    }
+
+    public function table(Table $table): Table
+    {
+        return $table
+            ->query(Payment::query()->where('user_id',auth()->user()->id))
+            ->columns([
+                TextColumn::make('payment_id')->searchable(),
+                TextColumn::make('product_name')->searchable(),
+                TextColumn::make('amount')->money('USD', divideBy: 1)->searchable(),
+                TextColumn::make('user.name')->searchable(),
+                TextColumn::make('payer_name')->searchable(),
+                TextColumn::make('payer_email')->searchable()->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('payment_method')->searchable(),
+                TextColumn::make('payment_status')->searchable()->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('created_at')->label('Fecha de Pago')->searchable()->toggleable(isToggledHiddenByDefault: false),
+            ])
+            ->filters([
+                // ...
+            ])
+            ->actions([
+                // ...
+            ])
+            ->bulkActions([
+                // ...
+            ]);
     }
 }

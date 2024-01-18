@@ -54,7 +54,7 @@ class PaypalController extends Controller
         $response = $provider->capturePaymentOrder($request->token);
         //dd($response);
         if (isset($response['status']) && $response['status'] == 'COMPLETED') {
-
+            
             // Insert data into database
             $payment = new Payment;
             $payment->payment_id = $response['id'];
@@ -63,7 +63,7 @@ class PaypalController extends Controller
             $payment->user_id = session()->get('user_id');
             $payment->amount = $response['purchase_units'][0]['payments']['captures'][0]['amount']['value'];
             $payment->currency = $response['purchase_units'][0]['payments']['captures'][0]['amount']['currency_code'];
-            $payment->payer_name = $response['payer']['name']['given_name'];
+            $payment->payer_name = $response['payer']['name']['given_name']." ".$response['payer']['name']['surname'];
             $payment->payer_email = $response['payer']['email_address'];
             $payment->payment_status = $response['status'];
             $payment->payment_method = "PayPal";
