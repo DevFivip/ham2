@@ -80,13 +80,13 @@ class PaypalController extends Controller
             $subscriber = User::find(session()->get('user_id'));
             $subscriber->subscribeTo($plan);
 
-            return redirect(route('filament.admin.pages.subscription'));
+            return redirect(route('filament.admin.pages.subscription', ['status' => 'success']));
         } else {
-            return redirect()->route('cancel');
+            return redirect(route('filament.admin.pages.subscription', ['status' => 'error']));
         }
     }
     public function cancel()
     {
-        return "Payment is cancelled.";
+        return redirect(route('filament.admin.pages.subscription', ['status' => 'error']));
     }
 }

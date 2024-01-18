@@ -6,7 +6,7 @@
 
     <x-filament::section>
         <x-slot name="heading">
-           Realizar Subcripción
+           Realizar Subscripción
         </x-slot>
 
         <x-filament-panels::form wire:submit.prevent="save">

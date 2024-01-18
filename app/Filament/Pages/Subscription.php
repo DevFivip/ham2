@@ -24,15 +24,19 @@ use Illuminate\Support\HtmlString;
 use Illuminate\Support\Facades\Blade;
 use App\Models\Plan;
 use Filament\Forms\Components\Radio;
+use Filament\Notifications\Notification;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Srmklive\PayPal\Services\PayPal as PayPalClient;
+
+use Illuminate\Http\Request;
+
 
 class Subscription extends Page implements HasForms, HasTable
 {
     use InteractsWithForms;
     use InteractsWithTable;
-    
+
 
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
 
@@ -42,8 +46,43 @@ class Subscription extends Page implements HasForms, HasTable
 
     public ?array $init;
 
-    public function mount(): void
+    public function mount(Request $req): void
     {
+
+        $status = $req->all();
+
+
+        if (array_key_exists('status', $status)) {
+            $statusValue = $status['status'];
+            if ($statusValue === 'success') {
+                Notification::make()
+                    ->success()
+                    ->title('Completado')
+                    ->body('Tu pago se realizo correctamente')
+                    ->persistent()
+                    ->send();
+            } elseif ($statusValue === 'error') {
+                Notification::make()
+                    ->danger()
+                    ->title('Error')
+                    ->body('No se completo la compra verifica tu balance y si el problema persiste comunicate con nosotros')
+                    ->persistent()
+                    ->send();
+            } else {
+                Notification::make()
+                    ->warning()
+                    ->title('Desconocido')
+                    ->body('Error 404')
+                    ->seconds(1)
+                    ->send();
+            }
+        } else {
+            // Manejar el caso en el que 'status' no está presente en el array
+
+        }
+
+
+        // dd($status);
         // abort_unless((auth()->user())->hasFeature('subscription-module'), 403);
         $this->init = ['plan_id' => null, 'pago_id' => null];
     }
@@ -71,17 +110,17 @@ class Subscription extends Page implements HasForms, HasTable
                     Select::make('plan_id')
                         ->placeholder('Seleccione un Plan')
                         ->label('Plan')
-                        ->options(Plan::whereNotIn('id', [6,5])->get()->pluck('name_with_price', 'id'))
-                        ->native(false)->columnSpan(2),
+                        ->options(Plan::whereNotIn('id', [6, 5])->get()->pluck('name_with_price', 'id'))
+                        ->native(false)->columnSpan(2)->required(),
 
 
-                        // Select::make('plan_id')
-                        // ->label('Plan')
-                        // ->placeholder('Seleccione un Plan')
-                        // ->options(Plan::whereNotIn('id', [6, 5])->get()->pluck('name_with_price', 'id'))
-                        // ->native(false)
-                        // ->required()
-                        // ->columnSpan(2),
+                    // Select::make('plan_id')
+                    // ->label('Plan')
+                    // ->placeholder('Seleccione un Plan')
+                    // ->options(Plan::whereNotIn('id', [6, 5])->get()->pluck('name_with_price', 'id'))
+                    // ->native(false)
+                    // ->required()
+                    // ->columnSpan(2),
                     Radio::make('payment_id')
                         ->label('Metodo de Pago')
                         ->required()
@@ -198,7 +237,7 @@ class Subscription extends Page implements HasForms, HasTable
     public function table(Table $table): Table
     {
         return $table
-            ->query(Payment::query()->where('user_id',auth()->user()->id))
+            ->query(Payment::query()->where('user_id', auth()->user()->id))
             ->heading('Pagos realizados')
             ->columns([
                 TextColumn::make('payment_id')->searchable(),

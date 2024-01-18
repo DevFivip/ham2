@@ -15,6 +15,7 @@ class ActualPlanOverview extends BaseWidget
 
             return [
                 Stat::make('Plan Actual', auth()->user()->subscription->plan->name)
+                    ->icon('polaris-major-billing-statement-dollar-filled')
                     ->description('Vencimiento:' . ' ' . auth()->user()->subscription->expired_at)
                     ->descriptionIcon('heroicon-o-calendar-days')
                     ->color('success'),
@@ -23,6 +24,7 @@ class ActualPlanOverview extends BaseWidget
             // no poseer plan
             return [
                 Stat::make('Plan Actual', 'Sin subscripcion')
+                    ->icon('polaris-major-billing-statement-dollar-filled')
                     ->descriptionColor('danger'),
             ];
         }
