@@ -183,7 +183,7 @@ class CalendarWidget extends FullCalendarWidget
 
                     // Definir las subreddits disponibles
                     $cs = Onlyfan::find($data['model_id']);
-                    $subredditsAsignados = $cs->subreddits->pluck("id")->toArray();
+                    $subredditsAsignados = $cs->subreddits()->where('status', 1)->get()->pluck("id")->toArray();
 
                     // Definir el periodo de tiempo
                     $fechaInicio = new DateTime($data["fecha_inicio"]);

@@ -22,6 +22,7 @@ class OnlyfanResource extends Resource
 
     protected static ?string $navigationIcon = 'si-onlyfans';
 
+
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()->where('user_id', auth()->user()->id);

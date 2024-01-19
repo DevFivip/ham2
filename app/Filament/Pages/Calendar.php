@@ -18,6 +18,7 @@ use Filament\Forms\Components\TextInput;
 
 use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Grid;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Notifications\Notification;
@@ -65,28 +66,26 @@ class Calendar extends Page implements HasForms
     public function form(Form $form): Form
     {
         return $form
-            ->columns([
-                'sm' => 6,
-                'xl' => 3,
-                '2xl' => 3,
-            ])
             ->schema([
-                Select::make('model_id')
-                    ->label('Modelo')
-                    ->options(Onlyfan::where('user_id', auth()->user()->id)->get()->pluck('name', 'id'))
-                    ->searchable(),
+                Grid::make(2)
+                    ->schema([
+                        Select::make('model_id')
+                            ->label('Modelo')
+                            ->options(Onlyfan::where('user_id', auth()->user()->id)->get()->pluck('name', 'id'))
+                            ->searchable(),
+                        Select::make('status')
+                            ->options([
+                                1 => 'Error',
+                                2 => 'Pendiente',
+                                3 => 'Publicado',
+                            ])
+                            ->searchable(),
+                    ]),
                 Select::make('subreddit_id')
                     ->multiple()
                     ->label('Subreddit')
-                    ->options(Subreddit::all()->pluck('name', 'id'))
-                    ->searchable(),
-                Select::make('status')
-                    ->options([
-                        1 => 'Error',
-                        2 => 'Pendiente',
-                        3 => 'Publicado',
-                    ])
-                    ->searchable(),
+                    ->options(Subreddit::where('status',1)->get()->pluck('full_description', 'id'))
+                    ->searchable()
             ])
             ->statePath('widgetData');
     }

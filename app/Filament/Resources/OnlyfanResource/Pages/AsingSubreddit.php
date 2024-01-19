@@ -34,10 +34,12 @@ class AsingSubreddit extends Page implements HasForms
 
     public function mount(): void
     {
-        $col=collect(Subreddit::get())->pluck('tags', 'id');
+        $col = collect(Subreddit::where('status', 1)->get())->pluck('tags', 'id');
         static::authorizeResourceAccess();
-        $this->options = (Subreddit::get())->pluck('name', 'id');
-        $this->tags = $col->map(function($arr){return implode(', ',$arr);});
+        $this->options = (Subreddit::where('status', 1)->get())->pluck('name', 'id');
+        $this->tags = $col->map(function ($arr) {
+            return implode(', ', $arr);
+        });
         $this->form->fill(['name' => $this->record->name]);
     }
     public function form(Form $form): Form

@@ -29,17 +29,18 @@ class AppServiceProvider extends ServiceProvider
                     ->url(route('filament.admin.pages.subscription'))
                     ->icon('polaris-major-billing-statement-dollar-filled'),
             ]);
+
             Filament::registerNavigationItems([
+
                 NavigationItem::make('Analytics')
                     ->url('#')
                     ->icon('heroicon-o-presentation-chart-line')
                     ->activeIcon('heroicon-s-presentation-chart-line')
                     ->group('Reports')
                     ->visible((auth()->user())?->hasFeature('reports-module') || false)
-                    ->sort(3),
 
 
-                    
+
                 // NavigationItem::make('Test Can permision')
                 //     ->icon('heroicon-o-presentation-chart-line')
                 //     ->url('#')
