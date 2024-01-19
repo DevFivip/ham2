@@ -37,9 +37,12 @@ class SubredditResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')->searchable()->description(fn (Subreddit $record): string => $record->description ?? ''),
+                Tables\Columns\TextColumn::make('name')->searchable()
+                ->description(fn (Subreddit $record): string => $record->description ?? '')
+                ->wrap()
+                ,
                 // Tables\Columns\TextColumn::make('description')->searchable()->limit(15),
-                Tables\Columns\TextColumn::make('tags')->badge()->searchable(),
+                Tables\Columns\TextColumn::make('tags')->badge()->searchable()->wrap(),
                 Tables\Columns\ToggleColumn::make('verification'),
                 Tables\Columns\ToggleColumn::make('status')
             ])
