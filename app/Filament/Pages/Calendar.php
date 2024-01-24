@@ -12,7 +12,6 @@ use Illuminate\Http\Request;
 use Filament\Forms\Form;
 use Filament\Actions\Action;
 
-
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 
@@ -22,6 +21,8 @@ use Filament\Forms\Components\Grid;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Notifications\Notification;
+
+use Filament\Support\Enums\MaxWidth;
 
 class Calendar extends Page implements HasForms
 {
@@ -35,18 +36,23 @@ class Calendar extends Page implements HasForms
 
     static ?array $xdata = [];
 
+    public function getMaxContentWidth(): MaxWidth
+    {
+        return MaxWidth::Full;
+    }
+
     public function mount(Request $req): void
     {
         $init = $req->all();
         // dd($init['model_id']);
 
-        if (!array_key_exists("model_id", $init)) {
+        if (!array_key_exists('model_id', $init)) {
             $init['model_id'] = null;
         }
-        if (!array_key_exists("subreddit_id", $init)) {
+        if (!array_key_exists('subreddit_id', $init)) {
             $init['subreddit_id'] = null;
         }
-        if (!array_key_exists("status", $init)) {
+        if (!array_key_exists('status', $init)) {
             $init['status'] = null;
         }
         // if(!$init['subreddit_id']){
@@ -67,25 +73,47 @@ class Calendar extends Page implements HasForms
     {
         return $form
             ->schema([
-                Grid::make(2)
-                    ->schema([
-                        Select::make('model_id')
-                            ->label('Modelo')
-                            ->options(Onlyfan::where('user_id', auth()->user()->id)->get()->pluck('name', 'id'))
-                            ->searchable(),
-                        Select::make('status')
-                            ->options([
-                                1 => 'Error',
-                                2 => 'Pendiente',
-                                3 => 'Publicado',
-                            ])
-                            ->searchable(),
-                    ]),
-                Select::make('subreddit_id')
-                    ->multiple()
-                    ->label('Subreddit')
-                    ->options(Subreddit::where('status',1)->get()->pluck('full_description', 'id'))
-                    ->searchable()
+                Grid::make(2)->schema([
+                    Select::make('model_id')
+                        ->label('Modelo')
+                        ->options(
+                            Onlyfan::where('user_id', auth()->user()->id)
+                                ->get()
+                                ->pluck('name', 'id'),
+                        )
+                        ->searchable(),
+                    Select::make('status')
+                        ->options([
+                            1 => 'Error',
+                            2 => 'Pendiente',
+                            3 => 'Publicado',
+                        ])
+                        ->searchable(),
+                ]),
+                Grid::make(2)->schema([
+                    Select::make('subreddit_id')
+                        ->multiple()
+                        ->label('Subreddit')
+                        ->options(
+                            Subreddit::where('status', 1)
+                                ->get()
+                                ->pluck('name', 'id'),
+                        )
+                        ->searchable(),
+                    Select::make('tags')
+                        ->multiple()
+                        ->label('Tags')
+                        ->options(
+                            Subreddit::get()
+                                ->flatMap(function ($subreddit) {
+                                    $tags = $subreddit->tags;
+                                    $tags = array_map('trim', $tags);
+                                    return $tags;
+                                })
+                                ->unique(),
+                        )
+                        ->searchable(),
+                ]),
             ])
             ->statePath('widgetData');
     }
@@ -94,7 +122,7 @@ class Calendar extends Page implements HasForms
         return [
             Action::make('search')
                 ->label('Filtrar Busqueda')
-                ->submit('save')
+                ->submit('save'),
         ];
     }
     public function save(): void

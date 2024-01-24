@@ -13,6 +13,7 @@ class Subreddit extends Model
         "name",
         "tags",
         "verification",
+        "category",
         "status",
         "description"
     ];
