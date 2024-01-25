@@ -52,10 +52,8 @@ class CalendarWidget extends FullCalendarWidget
         // $this->content = $post->content;
     }
 
-
     public function onEventClick(array $event): void
     {
-
         if ($this->getModel()) {
             $this->record = $this->resolveRecord($event['id']);
         }
@@ -83,9 +81,17 @@ class CalendarWidget extends FullCalendarWidget
 
     public function fetchEvents(array $fetchInfo): array
     {
+        $query = Event::query();
         // dd($this->widgetData);
+        if (
+            !auth()
+                ->user()
+                ->hasAnyRole('Admin')
+        ) {
+            $query->where('user_id', auth()->user()->id);
+        }
 
-        $query = Event::where('user_id', auth()->user()->id);
+        // $query = Event::where('user_id', auth()->user()->id);
 
         if (isset($this->widgetData['model_id'])) {
             $query->where('model_id', $this->widgetData['model_id']);
