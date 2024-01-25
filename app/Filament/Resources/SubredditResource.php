@@ -50,13 +50,26 @@ class SubredditResource extends Resource
                 )
                 ->label('Tags')
                 ->required(),
-            Forms\Components\Checkbox::make('verification')
-                ->label('Verificación')
-                ->helperText('Requiere verificación para realizar publicaciones?')
-                ->inline(),
-            Forms\Components\Checkbox::make('status')
-                ->default(true)
-                ->inline(),
+
+            Forms\Components\Grid::make([
+                'default' => 1,
+                '2xl' => 8,
+            ])->schema([
+                Forms\Components\TextInput::make('days_for_middle')
+                    ->label('Dias de espera')
+                    ->helperText('Cantidad de dias por medio para realizar otra publicacíon')
+                    ->columnSpan(2)
+                    ->numeric(),
+                Forms\Components\Checkbox::make('verification')
+                    ->label('Verificación')
+                    ->helperText('Requiere verificación para realizar publicaciones?')
+                    ->inline()
+                    ->columnSpanFull(),
+                Forms\Components\Checkbox::make('status')
+                    ->default(true)
+                    ->inline()
+                    ->columnSpanFull(),
+            ]),
             Forms\Components\Textarea::make('description')
                 ->rows(10)
                 ->cols(20),

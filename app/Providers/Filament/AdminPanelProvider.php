@@ -22,8 +22,6 @@ use App\Models\User;
 use Filament\Navigation\MenuItem;
 use Saade\FilamentFullCalendar\FilamentFullCalendarPlugin;
 
-
-
 class AdminPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
@@ -38,28 +36,11 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
-            ->pages([
-                Pages\Dashboard::class,
-            ])
+            ->pages([Pages\Dashboard::class])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
-            ->widgets([
-                Widgets\AccountWidget::class,
-                Widgets\FilamentInfoWidget::class,
-            ])
-            ->middleware([
-                EncryptCookies::class,
-                AddQueuedCookiesToResponse::class,
-                StartSession::class,
-                AuthenticateSession::class,
-                ShareErrorsFromSession::class,
-                VerifyCsrfToken::class,
-                SubstituteBindings::class,
-                DisableBladeIconComponents::class,
-                DispatchServingFilamentEvent::class,
-            ])
-            ->authMiddleware([
-                Authenticate::class,
-            ])
+            ->widgets([Widgets\AccountWidget::class, Widgets\FilamentInfoWidget::class])
+            ->middleware([EncryptCookies::class, AddQueuedCookiesToResponse::class, StartSession::class, AuthenticateSession::class, ShareErrorsFromSession::class, VerifyCsrfToken::class, SubstituteBindings::class, DisableBladeIconComponents::class, DispatchServingFilamentEvent::class])
+            ->authMiddleware([Authenticate::class])
             ->plugins([
                 FilamentSpatieRolesPermissionsPlugin::make(),
                 FilamentFullCalendarPlugin::make()
@@ -68,12 +49,12 @@ class AdminPanelProvider extends PanelProvider
                     ->editable()
                     ->timezone('America/Lima')
                     ->locale(config('app.locale'))
-                // ->plugins([])
-                // ->config()
+                    ->plugins(['interaction', 'dayGrid', 'timeGrid', 'list', 'multiMonth'])
+                    // ->config([
+                    //     'height' => 2000,
+                    // ]),
             ])
-            ->userMenuItems([
-
-            ])
+            ->userMenuItems([])
             ->spa();
     }
 }

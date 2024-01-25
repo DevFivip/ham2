@@ -12,6 +12,7 @@ return new class extends Migration {
     {
         Schema::table('subreddits', function (Blueprint $table) {
             $table->string('category')->nullable();
+            $table->integer('days_for_middle')->nullable();
         });
     }
 
@@ -22,6 +23,7 @@ return new class extends Migration {
     {
         Schema::table('subreddits', function (Blueprint $table) {
             $table->dropColumn(['category']);
+            $table->dropColumn(['days_for_middle']);
         });
     }
 };

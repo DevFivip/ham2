@@ -9,14 +9,7 @@ class Subreddit extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        "name",
-        "tags",
-        "verification",
-        "category",
-        "status",
-        "description"
-    ];
+    protected $fillable = ['name', 'tags', 'verification', 'category', 'status', 'description', 'days_for_middle'];
 
     protected $casts = [
         'tags' => 'array',
@@ -31,6 +24,24 @@ class Subreddit extends Model
 
     public function getFullDescriptionAttribute()
     {
-        return $this->name . ' (' . implode(', ', $this->tags) . ") " . $this->description;
+        return $this->name . ' (' . implode(', ', $this->tags) . ') ' . $this->description;
+    }
+    static function tags()
+    {
+        $tag = Subreddit::get()
+            ->flatMap(function ($subreddit) {
+                $arr = [];
+                $tags = $subreddit->tags;
+                // dd($tags);
+                $tags = array_map('trim', $tags);
+                $_tags = [];
+                foreach ($tags as $key => $value) {
+                    $_tags[$value] = $value;
+                }
+                return $_tags;
+            })
+            ->unique();
+
+        return $tag;
     }
 }

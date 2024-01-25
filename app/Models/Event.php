@@ -5,18 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+use Illuminate\Support\Str;
+
 class Event extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        "user_id",
-        "model_id",
-        "subreddit_id",
-        "status",
-        "posted_at"
-    ];
-
+    protected $fillable = ['user_id', 'model_id', 'subreddit_id', 'status', 'posted_at'];
 
     public function user()
     {
@@ -50,6 +45,6 @@ class Event extends Model
                 $icon = '🤷‍♂️';
                 break;
         }
-        return $icon . ' ' . $this->onlyfan->name . ' ' . $this->subreddit->name . ' (' . implode(', ', $this->subreddit->tags) . ")";
+        return $icon . ' ' . Str::words($this->onlyfan->name, 1, '') . ' ' . $this->subreddit->name;
     }
 }

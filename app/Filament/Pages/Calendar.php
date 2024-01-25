@@ -55,6 +55,12 @@ class Calendar extends Page implements HasForms
         if (!array_key_exists('status', $init)) {
             $init['status'] = null;
         }
+        if (!array_key_exists('category', $init)) {
+            $init['category'] = null;
+        }
+        if (!array_key_exists('tags', $init)) {
+            $init['tags'] = null;
+        }
         // if(!$init['subreddit_id']){
         //     $init['subreddit_id'] = null;
         // }
@@ -73,7 +79,7 @@ class Calendar extends Page implements HasForms
     {
         return $form
             ->schema([
-                Grid::make(2)->schema([
+                Grid::make(3)->schema([
                     Select::make('model_id')
                         ->label('Modelo')
                         ->options(
@@ -90,7 +96,7 @@ class Calendar extends Page implements HasForms
                         ])
                         ->searchable(),
                 ]),
-                Grid::make(2)->schema([
+                Grid::make(3)->schema([
                     Select::make('subreddit_id')
                         ->multiple()
                         ->label('Subreddit')
@@ -100,18 +106,21 @@ class Calendar extends Page implements HasForms
                                 ->pluck('name', 'id'),
                         )
                         ->searchable(),
+                    Select::make('category')
+                        ->multiple()
+                        ->label('Categoria')
+                        ->options(
+                            Subreddit::select('category')
+                                ->whereNotNull('category')
+                                ->distinct()
+                                ->get()
+                                ->pluck('category', 'category'),
+                        )
+                        ->searchable(),
                     Select::make('tags')
                         ->multiple()
                         ->label('Tags')
-                        ->options(
-                            Subreddit::get()
-                                ->flatMap(function ($subreddit) {
-                                    $tags = $subreddit->tags;
-                                    $tags = array_map('trim', $tags);
-                                    return $tags;
-                                })
-                                ->unique(),
-                        )
+                        ->options(Subreddit::tags())
                         ->searchable(),
                 ]),
             ])
@@ -135,6 +144,8 @@ class Calendar extends Page implements HasForms
             ->send();
 
         $queryString = Arr::query($data);
+
+        // dd($queryString);
         $this->redirect('/admin/calendar?' . $queryString, navigate: true);
     }
 }
