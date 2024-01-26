@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources\OnlyfanResource\Pages;
 
-
 use App\Filament\Resources\OnlyfanResource;
 use App\Models\Onlyfan;
 use App\Models\Subreddit;
@@ -36,10 +35,13 @@ class AsingSubreddit extends Page implements HasForms
     {
         $col = collect(Subreddit::where('status', 1)->get())->pluck('tags', 'id');
         static::authorizeResourceAccess();
-        $this->options = (Subreddit::where('status', 1)->get())->pluck('name', 'id');
+
+        $this->options = Subreddit::where('status', 1)->get()->pluck('name', 'id');
         $this->tags = $col->map(function ($arr) {
             return implode(', ', $arr);
         });
+        // dd($this->tags);
+
         $this->form->fill(['name' => $this->record->name]);
     }
     public function form(Form $form): Form
@@ -49,11 +51,15 @@ class AsingSubreddit extends Page implements HasForms
                 TextInput::make('name')
                     ->disabled()
                     ->required(),
-                CheckboxList::make('subreddits')->label('Subreddits Asignados')
-                    ->options($this->options)
+                CheckboxList::make('subreddits')
+                    ->label('Subreddits Asignados')
+                    // ->options($this->options)
                     ->descriptions($this->tags)
                     ->searchable()
-                    ->relationship(titleAttribute: 'name')->columns(3)
+                    ->relationship()
+                    ->getOptionLabelFromRecordUsing(fn(Subreddit $record) => "{$record->name}: {$record->category}")
+
+                    ->columns(3),
             ])
             ->statePath('data')
             ->model($this->record);
